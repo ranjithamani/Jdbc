@@ -12,15 +12,13 @@ public class DeleteByName {
 		String user = "root";
 		String pass = "Ranju@95";
 		String url = "jdbc:mysql://localhost:3306/ranjitha";
-		String fnqOfDriverImpl = "com.mysql.cj.jdbc.Driver";
 		try (Connection connection = DriverManager.getConnection(url, user, pass)) {
-			Class.forName(fnqOfDriverImpl);
 			String delete = "delete  from scam_table  where s_name='cash-for-votes scandal'";
 			Statement statement = connection.createStatement();
 			statement.execute(delete);
 
 			System.out.println(connection);
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 
 		}

@@ -12,15 +12,13 @@ public class AmountByName {
 		String user = "root";
 		String pass = "Ranju@95";
 		String url = "jdbc:mysql://localhost:3306/ranjitha";
-		String fnqOfDriverImpl = "com.mysql.cj.jdbc.Driver";
 		try (Connection connection = DriverManager.getConnection(url, user, pass)) {
-			Class.forName(fnqOfDriverImpl);
 			String update="update scam_table set s_amount=56000 where s_name='Telgi scam'";
 			Statement statement = connection.createStatement();
 			statement.execute(update);
 			
 			System.out.println(connection);
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException  e) {
 			e.printStackTrace();
 
 		}
