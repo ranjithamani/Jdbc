@@ -17,7 +17,7 @@ public class SelectTester {
 
 	public static void main(String[] args) {
 		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-			String query = "select * from scam_table where s_year>2005";
+			String query = "select * from scam_table where s_year>'2005-5-6'";
 			Statement statement = connection.createStatement();
 			statement.execute(query);
 			ResultSet result = statement.getResultSet();
