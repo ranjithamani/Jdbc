@@ -2,7 +2,7 @@ package com.xworkz.jdbc.dto;
 
 import java.io.Serializable;
 
-import com.xworkz.jdbc.dto.restaurant.constants.*;
+import com.xworkz.jdbc.dto.constants.RestaurantType;
 
 public class RestaurantDTO implements Serializable{
 	private String name;
@@ -10,6 +10,7 @@ public class RestaurantDTO implements Serializable{
 	private String specialFood;
 	private boolean best;
 	private RestaurantType type;
+	private int id;
 	
 	public RestaurantDTO() {
 		// TODO Auto-generated constructor stub
@@ -22,6 +23,16 @@ public class RestaurantDTO implements Serializable{
 		this.specialFood = specialFood;
 		this.best = best;
 		this.type = type;
+	}
+
+	public RestaurantDTO(String name, String location, String specialFood, boolean best, RestaurantType type, int id) {
+		super();
+		this.name = name;
+		this.location = location;
+		this.specialFood = specialFood;
+		this.best = best;
+		this.type = type;
+		this.id = id;
 	}
 
 	@Override
@@ -111,6 +122,14 @@ public class RestaurantDTO implements Serializable{
 
 	public void setType(RestaurantType type) {
 		this.type = type;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 
