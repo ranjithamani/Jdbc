@@ -1,6 +1,7 @@
 package com.xworkz.jdbc;
 
 import java.util.Collection;
+import java .util.Optional;
 
 import com.xworkz.jdbc.dao.WebseriesDAO;
 import com.xworkz.jdbc.dao.WebseriesDAOImpl;
@@ -33,7 +34,19 @@ public class WebseriesTester {
 		
 		Collection<WebseriesDTO> sort=dao.findAllSortByNameDesc();
 		sort.forEach(g->System.out.println(g));
+		
+
+		Collection<WebseriesDTO> pre=dao.findAll(m->m.getNoOfEpisodes()>250);
+			pre.forEach(k->System.out.println(k));
+			
+			Optional<WebseriesDTO> one=dao.findOne(g->g.getName().equals("Surya"));
+			if(one.isPresent()) {
+				WebseriesDTO  optional=one.get();
+				System.out.println(optional);
+			}
+		}
+
 
 	}
 
-}
+

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.xworkz.jdbc.dto.WebseriesDTO;
@@ -59,10 +60,7 @@ public class WebseriesDAOImpl implements WebseriesDAO {
 		int count=0;
 		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
             String query = "SELECT count(w_id) FROM websereis_table";
-			PreparedStatement prepare = connection.prepareStatement(query);
-			prepare.execute();
-
-			ResultSet set = prepare.getResultSet();
+			ResultSet set = createdFromPreparedStatement(connection, query);
 
 			if (set.next()) {
 				 count = set.getInt(1);
@@ -78,10 +76,7 @@ public class WebseriesDAOImpl implements WebseriesDAO {
 		int count=0;
 		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
             String query = "SELECT max(w_totalSeason) FROM websereis_table";
-			PreparedStatement prepare = connection.prepareStatement(query);
-			prepare.execute();
-
-			ResultSet set = prepare.getResultSet();
+			ResultSet set = createdFromPreparedStatement(connection, query);
 
 			if (set.next()) {
 				 count = set.getInt(1);
@@ -91,16 +86,20 @@ public class WebseriesDAOImpl implements WebseriesDAO {
 		}
 		return count;
 	}
+	private ResultSet createdFromPreparedStatement(Connection connection, String query) throws SQLException {
+		PreparedStatement prepare = connection.prepareStatement(query);
+		prepare.execute();
+
+		ResultSet set = prepare.getResultSet();
+		return set;
+	}
 	
 @Override
 public int findMinSeason() {
 	int count=0;
 	try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
         String query = "SELECT min(w_totalSeason) FROM websereis_table";
-		PreparedStatement prepare = connection.prepareStatement(query);
-		prepare.execute();
-
-		ResultSet set = prepare.getResultSet();
+		ResultSet set = createdFromPreparedStatement(connection, query);
 
 		if (set.next()) {
 			 count = set.getInt(1);
@@ -119,16 +118,7 @@ public Collection<WebseriesDTO> findAll() {
 		PreparedStatement prepare=connection.prepareStatement(query);
 		ResultSet result=prepare.executeQuery();
 		while(result.next()) {
-			int id=result.getInt("w_id");
-			String name=result.getString("w_name");
-			int episodes=result.getInt("w_noOfEpisodes");
-			int total=result.getInt("w_totalSeason");
-			String stream=result.getString("w_streamedIn");
-			String genre=result.getString("w_genre");
-			int age=result.getInt("w_yestAgeIndaNodbohudu");
-
-			WebseriesDTO dto=new WebseriesDTO( name, episodes, total, StreamedIn.valueOf(stream),Genre.valueOf(genre),age);
-			dto.setId(id);
+			WebseriesDTO dto = createdValuesFromResultSet(result);
 			list.add(dto);
 
 		}
@@ -137,6 +127,19 @@ public Collection<WebseriesDTO> findAll() {
 		
 	}
 	return list;
+}
+private WebseriesDTO createdValuesFromResultSet(ResultSet result) throws SQLException {
+	int id=result.getInt("w_id");
+	String name=result.getString("w_name");
+	int episodes=result.getInt("w_noOfEpisodes");
+	int total=result.getInt("w_totalSeason");
+	String stream=result.getString("w_streamedIn");
+	String genre=result.getString("w_genre");
+	int age=result.getInt("w_yestAgeIndaNodbohudu");
+
+	WebseriesDTO dto=new WebseriesDTO( name, episodes, total, StreamedIn.valueOf(stream),Genre.valueOf(genre),age);
+	dto.setId(id);
+	return dto;
 }
 @Override
 public Collection<WebseriesDTO> findAllSortByNameDesc() {
@@ -147,16 +150,7 @@ public Collection<WebseriesDTO> findAllSortByNameDesc() {
 		PreparedStatement prepare=connection.prepareStatement(query);
 		ResultSet result=prepare.executeQuery();
 		while(result.next()) {
-			int id=result.getInt("w_id");
-			String name=result.getString("w_name");
-			int episodes=result.getInt("w_noOfEpisodes");
-			int total=result.getInt("w_totalSeason");
-			String stream=result.getString("w_streamedIn");
-			String genre=result.getString("w_genre");
-			int age=result.getInt("w_yestAgeIndaNodbohudu");
-
-			WebseriesDTO dto=new WebseriesDTO( name, episodes, total, StreamedIn.valueOf(stream),Genre.valueOf(genre),age);
-			dto.setId(id);
+			WebseriesDTO dto = createdValuesFromResultSet(result);
 			list.add(dto);
 
 		}
@@ -171,23 +165,15 @@ public Collection<WebseriesDTO> findAll(Predicate<WebseriesDTO> predicate) {
 	Collection<WebseriesDTO> list=new ArrayList<WebseriesDTO>();
 
 	try(Connection connection=DriverManager.getConnection(URL, USERNAME, PASSWORD)){
-		String query="select * from websereis_table values";
+		String query="select * from websereis_table";
 		PreparedStatement prepare=connection.prepareStatement(query);
 		ResultSet result=prepare.executeQuery();
 		
 		while(result.next()) {
-			int id=result.getInt("w_id");
-			String name=result.getString("w_name");
-			int episodes=result.getInt("w_noOfEpisodes");
-			int total=result.getInt("w_totalSeason");
-			String stream=result.getString("w_streamedIn");
-			String genre=result.getString("w_genre");
-			int age=result.getInt("w_yestAgeIndaNodbohudu");
-
-			WebseriesDTO dto=new WebseriesDTO( name, episodes, total, StreamedIn.valueOf(stream),Genre.valueOf(genre),age);
-			dto.setId(id);
+			WebseriesDTO dto = createdValuesFromResultSet(result);
+			if(predicate.test(dto)) {
 			list.add(dto);
-
+			}
 		}
 	}catch(SQLException e) {
 		e.printStackTrace();
@@ -195,5 +181,29 @@ public Collection<WebseriesDTO> findAll(Predicate<WebseriesDTO> predicate) {
 	}
 	return list;
 }
+@Override
+public Optional<WebseriesDTO> findOne(Predicate<WebseriesDTO> predicate) {
+	Optional<WebseriesDTO> optional=Optional.empty();
+	try(Connection connection=DriverManager.getConnection(URL, USERNAME, PASSWORD)){
+		String query="select * from websereis_table";
+		PreparedStatement prepare=connection.prepareStatement(query);
+		ResultSet result=prepare.executeQuery();
+		
+		while(result.next()) {
+			WebseriesDTO dto = createdValuesFromResultSet(result);
+			if(predicate.test(dto)) {
+				optional=Optional.of(dto);
+				break;
+			}
+			}
+	}catch(SQLException e) {
+		e.printStackTrace();
+		
+	}
+		
+	return optional;
+}
 
 }
+
+
