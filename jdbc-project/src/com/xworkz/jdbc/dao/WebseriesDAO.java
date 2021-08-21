@@ -8,13 +8,21 @@ import com.xworkz.jdbc.dto.WebseriesDTO;
 
 public interface WebseriesDAO {
 	int save(WebseriesDTO dto);
+
 	int total();
-int findMaxSeason();
-int findMinSeason();
-Collection<WebseriesDTO> findAllSortByNameDesc();
-Collection<WebseriesDTO> findAll(Predicate<WebseriesDTO> predicate);
-Collection<WebseriesDTO> findAll();
-Optional<WebseriesDTO> findOne(Predicate<WebseriesDTO> predicate);
-//int saveAll(Collection<WebseriesDTO> collection);
+
+	int findMaxSeason();
+
+	int findMinSeason();
+
+	Collection<WebseriesDTO> findAllSortByNameDesc();
+
+	Collection<WebseriesDTO> findAll(Predicate<WebseriesDTO> predicate);
+
+	Collection<WebseriesDTO> findAll();
+
+	Optional<WebseriesDTO> findOne(Predicate<WebseriesDTO> predicate);
+
+	void saveAll(Collection<WebseriesDTO> collection);
 
 }

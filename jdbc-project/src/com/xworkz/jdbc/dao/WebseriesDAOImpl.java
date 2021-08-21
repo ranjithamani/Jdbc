@@ -29,8 +29,8 @@ public class WebseriesDAOImpl implements WebseriesDAO {
 			tempConnection = connection;
 			connection.setAutoCommit(false);
 			String query = "insert into websereis_table(w_name,w_noOfEpisodes,w_totalSeason,w_streamedIn,w_genre,w_yestAgeIndaNodbohudu)values(?,?,?,?,?,?)";
-			PreparedStatement prepare = connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
-			
+			PreparedStatement prepare = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
 			prepare.setString(1, dto.getName());
 			prepare.setInt(2, dto.getNoOfEpisodes());
 			prepare.setInt(3, dto.getTotalSeason());
@@ -51,41 +51,44 @@ public class WebseriesDAOImpl implements WebseriesDAO {
 				tempConnection.rollback();
 			} catch (SQLException e1) {
 				e1.printStackTrace();
-				}
+			}
 		}
 		return temp;
 	}
+
 	@Override
 	public int total() {
-		int count=0;
+		int count = 0;
 		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-            String query = "SELECT count(w_id) FROM websereis_table";
+			String query = "SELECT count(w_id) FROM websereis_table";
 			ResultSet set = createdFromPreparedStatement(connection, query);
 
 			if (set.next()) {
-				 count = set.getInt(1);
-				}
-            } catch (SQLException e) {
+				count = set.getInt(1);
+			}
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	
+
 		return count;
 	}
+
 	@Override
 	public int findMaxSeason() {
-		int count=0;
+		int count = 0;
 		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-            String query = "SELECT max(w_totalSeason) FROM websereis_table";
+			String query = "SELECT max(w_totalSeason) FROM websereis_table";
 			ResultSet set = createdFromPreparedStatement(connection, query);
 
 			if (set.next()) {
-				 count = set.getInt(1);
-				}
-            } catch (SQLException e) {
+				count = set.getInt(1);
+			}
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return count;
 	}
+
 	private ResultSet createdFromPreparedStatement(Connection connection, String query) throws SQLException {
 		PreparedStatement prepare = connection.prepareStatement(query);
 		prepare.execute();
@@ -93,117 +96,159 @@ public class WebseriesDAOImpl implements WebseriesDAO {
 		ResultSet set = prepare.getResultSet();
 		return set;
 	}
-	
-@Override
-public int findMinSeason() {
-	int count=0;
-	try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-        String query = "SELECT min(w_totalSeason) FROM websereis_table";
-		ResultSet set = createdFromPreparedStatement(connection, query);
 
-		if (set.next()) {
-			 count = set.getInt(1);
+	@Override
+	public int findMinSeason() {
+		int count = 0;
+		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+			String query = "SELECT min(w_totalSeason) FROM websereis_table";
+			ResultSet set = createdFromPreparedStatement(connection, query);
+
+			if (set.next()) {
+				count = set.getInt(1);
 			}
-        } catch (SQLException e) {
-		e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
 	}
-	return count;
-}
-@Override
-public Collection<WebseriesDTO> findAll() {
-	Collection<WebseriesDTO> list=new ArrayList<WebseriesDTO>();
-	try(Connection connection=DriverManager.getConnection(URL, USERNAME, PASSWORD)){
-		
-		String query="select * from websereis_table";
-		PreparedStatement prepare=connection.prepareStatement(query);
-		ResultSet result=prepare.executeQuery();
-		while(result.next()) {
-			WebseriesDTO dto = createdValuesFromResultSet(result);
-			list.add(dto);
+
+	@Override
+	public Collection<WebseriesDTO> findAll() {
+		Collection<WebseriesDTO> list = new ArrayList<WebseriesDTO>();
+		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+			String query = "select * from websereis_table";
+			PreparedStatement prepare = connection.prepareStatement(query);
+			ResultSet result = prepare.executeQuery();
+			while (result.next()) {
+				WebseriesDTO dto = createdValuesFromResultSet(result);
+				list.add(dto);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 
 		}
-	}catch(SQLException e) {
-		e.printStackTrace();
-		
+		return list;
 	}
-	return list;
-}
-private WebseriesDTO createdValuesFromResultSet(ResultSet result) throws SQLException {
-	int id=result.getInt("w_id");
-	String name=result.getString("w_name");
-	int episodes=result.getInt("w_noOfEpisodes");
-	int total=result.getInt("w_totalSeason");
-	String stream=result.getString("w_streamedIn");
-	String genre=result.getString("w_genre");
-	int age=result.getInt("w_yestAgeIndaNodbohudu");
 
-	WebseriesDTO dto=new WebseriesDTO( name, episodes, total, StreamedIn.valueOf(stream),Genre.valueOf(genre),age);
-	dto.setId(id);
-	return dto;
-}
-@Override
-public Collection<WebseriesDTO> findAllSortByNameDesc() {
-	Collection<WebseriesDTO> list=new ArrayList<WebseriesDTO>();
-	try(Connection connection=DriverManager.getConnection(URL, USERNAME, PASSWORD)){
-		
-		String query="select * from websereis_table order by w_name desc";
-		PreparedStatement prepare=connection.prepareStatement(query);
-		ResultSet result=prepare.executeQuery();
-		while(result.next()) {
-			WebseriesDTO dto = createdValuesFromResultSet(result);
-			list.add(dto);
+	private WebseriesDTO createdValuesFromResultSet(ResultSet result) throws SQLException {
+		int id = result.getInt("w_id");
+		String name = result.getString("w_name");
+		int episodes = result.getInt("w_noOfEpisodes");
+		int total = result.getInt("w_totalSeason");
+		String stream = result.getString("w_streamedIn");
+		String genre = result.getString("w_genre");
+		int age = result.getInt("w_yestAgeIndaNodbohudu");
+
+		WebseriesDTO dto = new WebseriesDTO(name, episodes, total, StreamedIn.valueOf(stream), Genre.valueOf(genre),
+				age);
+		dto.setId(id);
+		return dto;
+	}
+
+	@Override
+	public Collection<WebseriesDTO> findAllSortByNameDesc() {
+		Collection<WebseriesDTO> list = new ArrayList<WebseriesDTO>();
+		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+			String query = "select * from websereis_table order by w_name desc";
+			PreparedStatement prepare = connection.prepareStatement(query);
+			ResultSet result = prepare.executeQuery();
+			while (result.next()) {
+				WebseriesDTO dto = createdValuesFromResultSet(result);
+				list.add(dto);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 
 		}
-	}catch(SQLException e) {
-		e.printStackTrace();
-		
+		return list;
 	}
-	return list;
-}
-@Override
-public Collection<WebseriesDTO> findAll(Predicate<WebseriesDTO> predicate) {
-	Collection<WebseriesDTO> list=new ArrayList<WebseriesDTO>();
 
-	try(Connection connection=DriverManager.getConnection(URL, USERNAME, PASSWORD)){
-		String query="select * from websereis_table";
-		PreparedStatement prepare=connection.prepareStatement(query);
-		ResultSet result=prepare.executeQuery();
-		
-		while(result.next()) {
-			WebseriesDTO dto = createdValuesFromResultSet(result);
-			if(predicate.test(dto)) {
-			list.add(dto);
+	@Override
+	public Collection<WebseriesDTO> findAll(Predicate<WebseriesDTO> predicate) {
+		Collection<WebseriesDTO> list = new ArrayList<WebseriesDTO>();
+
+		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+			String query = "select * from websereis_table";
+			PreparedStatement prepare = connection.prepareStatement(query);
+			ResultSet result = prepare.executeQuery();
+
+			while (result.next()) {
+				WebseriesDTO dto = createdValuesFromResultSet(result);
+				if (predicate.test(dto)) {
+					list.add(dto);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return list;
+	}
+
+	@Override
+	public Optional<WebseriesDTO> findOne(Predicate<WebseriesDTO> predicate) {
+		Optional<WebseriesDTO> optional = Optional.empty();
+		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+			String query = "select * from websereis_table";
+			PreparedStatement prepare = connection.prepareStatement(query);
+			ResultSet result = prepare.executeQuery();
+
+			while (result.next()) {
+				WebseriesDTO dto = createdValuesFromResultSet(result);
+				if (predicate.test(dto)) {
+					optional = Optional.of(dto);
+					break;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+
+		return optional;
+	}
+
+	@Override
+	public void saveAll(Collection<WebseriesDTO> collection) {
+		Connection temp = null;
+		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+			temp = connection;
+			connection.setAutoCommit(false);
+			String query = "insert into websereis_table(w_name,w_noOfEpisodes,w_totalSeason,w_streamedIn,w_genre,w_yestAgeIndaNodbohudu)values(?,?,?,?,?,?)";
+			PreparedStatement prepare = connection.prepareStatement(query);
+			collection.forEach(r -> {
+				try {
+					prepare.setString(1, r.getName());
+					prepare.setInt(2, r.getNoOfEpisodes());
+					prepare.setInt(3, r.getTotalSeason());
+					prepare.setString(4, r.getStreamedIn().toString());
+					prepare.setString(5, r.getGenre().toString());
+					prepare.setInt(6, r.getYestAgeIndaNodbohudu());
+					prepare.execute();
+					System.out.println(r);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			});
+			connection.commit();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			try {
+				temp.rollback();
+			} catch (SQLException e2) {
+				e2.printStackTrace();
 			}
 		}
-	}catch(SQLException e) {
-		e.printStackTrace();
-		
+
 	}
-	return list;
-}
-@Override
-public Optional<WebseriesDTO> findOne(Predicate<WebseriesDTO> predicate) {
-	Optional<WebseriesDTO> optional=Optional.empty();
-	try(Connection connection=DriverManager.getConnection(URL, USERNAME, PASSWORD)){
-		String query="select * from websereis_table";
-		PreparedStatement prepare=connection.prepareStatement(query);
-		ResultSet result=prepare.executeQuery();
-		
-		while(result.next()) {
-			WebseriesDTO dto = createdValuesFromResultSet(result);
-			if(predicate.test(dto)) {
-				optional=Optional.of(dto);
-				break;
-			}
-			}
-	}catch(SQLException e) {
-		e.printStackTrace();
-		
-	}
-		
-	return optional;
-}
 
 }
+
+
 
 
